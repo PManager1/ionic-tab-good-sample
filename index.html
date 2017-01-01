@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Ionic Tabs inside of Tabs and Menu</title>
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+  <html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="//code.ionicframework.com/nightly/css/ionic.css" rel="stylesheet" />
+    <script src="//code.ionicframework.com/nightly/js/ionic.bundle.js"></script>
+
+</head>
+
+<body ng-app="ionicApp">
+    <ion-nav-view animation="slide-left-right"></ion-nav-view>
+</body>
+
+<script id="templates/menu.html" type="text/ng-template">
+    <ion-side-menus>
+        <ion-side-menu-content>
+            <ion-nav-bar class="bar-positive">
+                <ion-nav-buttons side="left">
+                    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+                </ion-nav-buttons>
+                <ion-nav-back-button></ion-nav-back-button>
+            </ion-nav-bar>
+            <ion-nav-view name="menu-content"></ion-nav-view>
+        </ion-side-menu-content>
+        <ion-side-menu side="left" expose-aside-when="large">
+            <ion-nav-view name="menu-left"></ion-nav-view>
+        </ion-side-menu>
+    </ion-side-menus>
+</script>
+
+<script id="templates/menu-anon.html" type="text/ng-template">
+    <ion-view>
+        <ion-header-bar>
+            <h1 class="title">Menu</h1>
+        </ion-header-bar>
+        <ion-header-bar class="menu-header menu-header-anon bar-subheader">
+            <ion-item class="item-icon-left" ng-click="auth.logged_in = true" href="#/app/tab/journal/{{conf.current}}">
+                <i class="icon ion-log-in"></i>Login
+            </ion-item>
+        </ion-header-bar>
+        <div ng-include="'templates/menu-bookmarks.html'"></div>
+    </ion-view>
+</script>
+
+<script id="templates/menu-auth.html" type="text/ng-template">
+    <ion-view>
+        <ion-header-bar>
+            <h1 class="title">Menu</h1>
+        </ion-header-bar>
+        <ion-header-bar class="menu-header menu-header-auth bar-subheader">
+            <ion-item class="item-icon-left" ng-click="auth.logged_in = false" href="#/app/journal/{{conf.current}}">
+                <i class="icon ion-log-out"></i>Logout
+            </ion-item>
+
+
+            <ion-item class="menu-tabs tabs tabs-secondary tabs-icon-top">
+                <a class="tab-item" ng-click="main.show_list = 'bookmarks';" ng-class="{'active': main.show_list === 'bookmarks'}">
+                    <i class="icon" ng-class="main.show_list === 'bookmarks' ? 'ion-ios-bookmarks' : 'ion-ios-bookmarks-outline'">
+                    </i> Bookmarks
+                </a>
+                <a class="tab-item" ng-click="main.show_list = 'friends';" ng-class="{'active': main.show_list === 'friends'}">
+                    <i class="icon" ng-class="main.show_list === 'friends' ? 'ion-ios-heart' : 'ion-ios-heart-outline'">
+                    </i> Friends
+                </a>
+                <a class="tab-item" ng-click="main.show_list = 'groups';" ng-class="{'active': main.show_list === 'groups'}">
+                    <i class="icon" ng-class="main.show_list === 'groups' ? 'ion-ios-chatboxes' : 'ion-ios-chatboxes-outline'">
+                    </i> Groups
+                </a>
+            </ion-item>
+
+
+        </ion-header-bar>
+
+        <div ng-show="main.show_list === 'bookmarks'" ng-include="'templates/menu-bookmarks.html'"></div>
+        <div ng-show="main.show_list === 'friends'" ng-include="'templates/menu-friends.html'"></div>
+        <div ng-show="main.show_list === 'groups'" ng-include="'templates/menu-groups.html'"></div>
+
+    </ion-view>
+</script>
+
+<script id="templates/menu-bookmarks.html" type="text/ng-template">
+    <ion-view>
+        <ion-content ng-class="auth.logged_in ? 'menu-list-auth' : 'menu-list-anon'">
+            <ion-list>
+                <ion-item nav-clear class="item-icon-left" collection-repeat="bookmark in bookmarks" href="#/app{{auth.logged_in ? '/tab' : ''}}/journal/{{bookmark.user.username}}" ng-click="conf.current = bookmark.user.username" ng-class="{active: bookmark.user.username == conf.current}">
+                    <img class="icon menu-icon-avatar" ng-src="{{bookmark.user.picture.thumbnail}}">{{bookmark.user.username}}</ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="templates/menu-friends.html" type="text/ng-template">
+    <ion-view>
+        <ion-content ng-class="auth.logged_in ? 'menu-list-auth' : 'menu-list-anon'">
+            <ion-list>
+                <ion-item nav-clear class="item-icon-left" collection-repeat="friend in friends" href="#/app/tab/journal/{{friend.user.username}}" ng-click="conf.current = friend.user.username" ng-class="{active: friend.user.username == conf.current}">
+                    <img class="icon menu-icon-avatar" ng-src="{{friend.user.picture.thumbnail}}">{{friend.user.username}}</ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="templates/menu-groups.html" type="text/ng-template">
+    <ion-view>
+        <ion-content ng-class="auth.logged_in ? 'menu-list-auth' : 'menu-list-anon'">
+            <ion-list>
+                <ion-item nav-clear class="item-icon-left" collection-repeat="group in groups" href="#/app/tab/journal/{{group.user.username}}" ng-click="conf.current = group.user.username" ng-class="{active: group.user.username == conf.current}">
+                    <img class="icon menu-icon-avatar" ng-src="{{group.user.picture.thumbnail}}">{{group.user.username}}</ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="templates/tabs.html" type="text/ng-template">
+    <ion-tabs class="tabs-icon-top tabs-color-active-positive">
+        <ion-tab title="Journal" icon-off="ion-ios-person-outline" icon-on="ion-ios-person" href="#/app/tab/journal/{{conf.current}}">
+            <ion-nav-view name="tab-journal"></ion-nav-view>
+        </ion-tab>
+        <ion-tab title="Friends" icon-off="ion-ios-people-outline" icon-on="ion-ios-people" href="#/app/tab/friends/posts">
+            <ion-nav-view name="tab-friends"></ion-nav-view>
+        </ion-tab>
+        <ion-tab title="Favourites" icon-off="ion-ios-star-outline" icon-on="ion-ios-star" href="#/app/tab/favourites">
+            <ion-nav-view name="tab-favourites"></ion-nav-view>
+        </ion-tab>
+        <ion-tab title="Messages" icon-off="ion-ios-email-outline" icon-on="ion-ios-email" href="#/app/tab/messages">
+            <ion-nav-view name="tab-messages"></ion-nav-view>
+        </ion-tab>
+    </ion-tabs>
+</script>
+
+<script id="templates/tab-feed.html" type="text/ng-template">
+    <ion-view view-title="{{title}}" hide-back-button="true">
+        <ion-nav-buttons side="left">
+            <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+        <ion-content>
+            <ion-refresher on-refresh="doRefresh()"></ion-refresher>
+            <ion-list>
+                <ion-item class="item-avatar item-icon-right" collection-repeat="post in posts" type="item-text-wrap" href="#/app{{auth.logged_in ? '/tab' : ''}}/{{mode}}/{{journal}}/{{post.user.username}}">
+                    <img ng-src="{{post.user.picture.thumbnail}}">
+                    <h2>{{post.user.username}}</h2>
+                    <p>{{post.user.sha256}}</p>
+                    <i class="icon ion-chevron-right icon-accessory"></i>
+                </ion-item>
+            </ion-list>
+            <ion-infinite-scroll on-infinite="loadMore()" distance="5%"></ion-infinite-scroll>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="templates/view-post.html" type="text/ng-template">
+    <ion-view cache-view="false">
+        <ion-nav-title>{{post.user.username}}</ion-nav-title>
+        <ion-content>
+            <div class="list card">
+
+                <div class="item item-avatar">
+                    <img actual-src="{{post.user.picture.thumbnail}}" ng-src="{{placeholder}}" />
+                    <h2>{{post.user.username}}</h2>
+                    <p>{{post.user.registered | date:'medium'}}</p>
+                </div>
+
+                <div class="item item-body">
+                    <img class="full-image" actual-src="{{post.user.picture.large}}" ng-src="{{placeholder}}">
+                    <p>
+                        {{post.user.sha256}}
+                    </p>
+                    <p>
+                        <a href="#" class="subdued">1 Like</a>
+                        <a href="#" class="subdued">5 Comments</a>
+                    </p>
+                </div>
+
+                <div class="item tabs tabs-secondary tabs-icon-left">
+                    <a class="tab-item" href="#">
+                        <i class="icon ion-thumbsup"></i> Like
+                    </a>
+                    <a class="tab-item" href="#">
+                        <i class="icon ion-chatbox"></i> Comment
+                    </a>
+                    <a class="tab-item" href="#">
+                        <i class="icon ion-share"></i> Share
+                    </a>
+                </div>
+
+            </div>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="messages/tab-messages.html" type="text/ng-template">
+    <ion-tabs class="tabs-messages tabs-light tabs-top tabs-icon-top has-tabs-top">
+        <ion-tab title="All" icon-on="ion-ios-filing" icon-off="ion-ios-filing-outline" href="#/app/tab/messages/all">
+            <ion-nav-view name="tab-messages-all"></ion-nav-view>
+        </ion-tab>
+        <ion-tab title="Sent" icon-on="ion-ios-paperplane" icon-off="ion-ios-paperplane-outline" href="#/app/tab/messages/sent">
+            <ion-nav-view name="tab-messages-sent"></ion-nav-view>
+        </ion-tab>
+        <ion-tab title="Flagged" icon-on="ion-ios-flag" icon-off="ion-ios-flag-outline" href="#/app/tab/messages/flagged">
+            <ion-nav-view name="tab-messages-flagged"></ion-nav-view>
+        </ion-tab>
+    </ion-tabs>
+</script>
+
+<script id="messages/tab-message-list.html" type="text/ng-template">
+    <ion-view view-title={{data.title}}>
+
+        <ion-nav-buttons side="primary">
+            <button class="button button-icon icon ion-ios-minus-outline" ng-click="data.showDelete = !data.showDelete"></button>
+        </ion-nav-buttons>
+
+        <ion-content>
+            <ion-list show-delete="data.showDelete">
+
+                <ion-item ng-repeat="email in emails" class="email-item item-button-right item-icon-left item-remove-animate" ng-if="data.mode != 'flagged' || email.flagged" href="#/app/tab/messages/{{data.mode}}/{{email.id}}">
+                    <i class="icon" ng-class="{'ion-ios-email-outline': email.was_read, 'ion-ios-email energized': !email.was_read}"></i>
+                    <h2>{{email.subject}}</h2>
+                    <p>
+                        <span class="email-text">
+      {{email.from}}
+    </span>
+                        <span class="item-note email-text">
+      {{email.date | date:'EEE M/d/yyyy h:mm a'}}
+    </span>
+                    </p>
+                    <button class="button button-clear email-flag-button" ng-click="onEmailFlag(email, $event)">
+                        <i class="icon" ng-class="{'ion-flag assertive': email.flagged, 'ion-flag': !email.flagged}"></i>
+                    </button>
+
+                    <ion-delete-button class="email-delete-button ion-minus-circled" ng-click="onEmailDelete(email)">
+                    </ion-delete-button>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="messages/view-message.html" type="text/ng-template">
+    <ion-view view-title="E-Mail">
+        <ion-content>
+
+            <div class="list card">
+
+                <ion-item class="item-icon-left">
+                    <i class="icon ion-ios-email-outline"></i>
+                    <h2>{{email.from}}</h2>
+                    <p>
+                        <span class="email-text">
+      {{email.subject}}
+    </span>
+                        <span class="item-note email-text">
+      {{email.date | date:'EEE M/d/yyyy h:mm a'}}
+    </span>
+                    </p>
+                </ion-item>
+
+                <ion-item class="item-text-wrap email-body-text">
+                    {{email.body}}
+                </ion-item>
+
+            </div>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="templates/tab-favourites.html" type="text/ng-template">
+    <ion-view view-title="Favourites">
+        <ion-content>
+            <ion-list>
+                <ion-item>Favourites</ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-view>
+</script>
+
+</html>
+  
+    <script src="js/index.js"></script>
+
+</body>
+</html>
